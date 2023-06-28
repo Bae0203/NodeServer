@@ -53,17 +53,21 @@
     <h4 class="container mt-4"><strong>글 작성페이지</strong></h4>
 
     <div class="container mt-3">
-      <form action="/add" method="POST">
-        <div class="form-group">
-          <label>오늘의 할일</label>
-          <input type="text" class="form-control" name="title" />
-        </div>
-        <div class="form-group">
-          <label>날짜</label>
-          <input type="text" class="form-control" name="date" />
-        </div>
-        <button type="submit" class="btn btn-outline-secondary">Submit</button>
-      </form>
+      <div class="form-group">
+        <label>오늘의 할일</label>
+        <input type="text" class="form-control_title" name="title" />
+      </div>
+      <div class="form-group">
+        <label>내용</label>
+        <input type="text" class="form-control_context" name="date" />
+      </div>
+      <button
+        type="submit"
+        class="btn btn-outline-secondary"
+        onclick="ServerConnect()"
+      >
+        Submit
+      </button>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
@@ -75,5 +79,23 @@
       integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
       crossorigin="anonymous"
     ></script>
+    <script>
+      const title = document.querySelector(".form-control_title");
+      const context = document.querySelector(".form-control_context");
+      const ServerConnect = () => {
+        fetch("http://localhost:8080/add", {
+          method: "POST",
+          body: JSON.stringify({
+            title: title.value,
+            context: context.value,
+          }),
+        })
+          .then((response) => response.json())
+          .then((result) => console.log(result))
+          .catch((e) => {
+            console.log(e);
+          });
+      };
+    </script>
   </body>
 </html>
