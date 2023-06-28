@@ -1,35 +1,51 @@
 const express = require("express");
 const app = express();
-
 app.use(express.urlencoded({ extended: true }));
+// let MongoClient = require("mongodb").MongoClient;
 
-app.listen(8080, function () {
-  console.log("listening on 8080");
+const url =
+  "mongodb+srv://admin:qwer1234@testcluster.2vudydx.mongodb.net/todoapp?retryWrites=true&w=majority";
+// mongodb+srv://아이디:비밀번호@testcluster.2vudydx.mongodb.net/collection이름?retryWrites=true&w=majority
+
+let mongoose = require("mongoose");
+
+const postShema = new mongoose.Schema({
+  title: String,
+  context: String,
+  date: String,
 });
 
-/**
- * 누군가가 /pet으로 방문을 하면
- * pet에 관련된 안내문을 띄워주자
- */
+// 2. testDB 세팅
+mongoose
+  .connect(url)
+  .then(() => {
+    console.log("MongoDB에 연결되었습니다.");
+    Connection();
+  })
+  .catch((error) => {
+    console.error("MongoDB 연결 오류:", error);
+  });
 
-//요청 = req, 응답 = res
-app.get("/pet", function (요청, 응답) {
-  응답.send("펫 관련 페이지입니다.");
-});
+function Connection() {
+  const Post = mongoose.model("post", postShema);
+  Post.find()
+    .then((posts) => {
+      console.log("모든 문서:", posts);
+    })
+    .catch((error) => {
+      console.error("문서 조회 오류:", error);
+    });
+  const today = new Date();
 
-app.get("/beauty", function (req, res) {
-  res.send("화장품 관련 페이지입니다.");
-});
-
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
-});
-
-app.get("/write", (req, res) => {
-  res.sendFile(__dirname + "/write.html");
-});
-
-app.post("/add", (req, res) => {
-  res.send("전송완료");
-  console.log(req.body);
-});
+  let year = today.getFullYear(); // 년도
+  let month = today.getMonth() + 1; // 월
+  let date = today.getDate(); // 날짜
+  const NewPost = new Post({
+    title: "테스트1",
+    context: "테스트22222",
+    date: `${year} / ${month} / ${date}`,
+  });
+  NewPost.save()
+    .then((e) => console.log(e))
+    .catch((e) => console.log("Error !!! : ", e));
+}
