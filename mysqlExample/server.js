@@ -13,11 +13,20 @@ const conn = {
   password: "qwer1234",
   database: "test1",
 };
+let connection = mysql.createConnection(conn); // DB 커넥션 생성
+connection.connect();
 
 function DBconnnection() {
-  let connection = mysql.createConnection(conn); // DB 커넥션 생성
-  connection.connect();
   let Query = "SELECT * FROM test1.test";
+  connection.query(Query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(results);
+  });
+}
+function PostContents(props) {
+  let Query = `INSERT INTO test (title,context,idx) VALUES ("${props.title}", "${props.context}", 0);`;
   connection.query(Query, function (err, results, fields) {
     if (err) {
       console.log(err);
@@ -33,6 +42,11 @@ app.get("/", function (req, res) {
 app.get("/view", function (req, res) {
   DBconnnection();
   res.send("hello NodeJs");
+});
+
+app.post("/add", function (req, res) {
+  PostContents({ title: req.body.title, context: req.body.context });
+  res.send("저장되었습니다.");
 });
 
 app.listen(8080, () => {
