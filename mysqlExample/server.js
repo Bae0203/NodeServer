@@ -16,22 +16,34 @@ const conn = {
 let connection = mysql.createConnection(conn); // DB 커넥션 생성
 connection.connect();
 
-function DBconnnection() {
+function DBconnnection(res) {
   let Query = "SELECT * FROM test1.test";
-  connection.query(Query, function (err, results, fields) {
+  connection.query(Query, function (err, results) {
+    if (err) {
+      console.log(err);
+      res.send({ err: "값을 불러오는데 실패하였습니다." });
+    }
+    res.send({ contents: results });
+  });
+}
+function PostContents(props) {
+  let Query = `INSERT INTO test (title,context,idx) VALUES ("${props.title}", "${props.context}", 0);`;
+  connection.query(Query, function (err, results) {
     if (err) {
       console.log(err);
     }
     console.log(results);
   });
 }
-function PostContents(props) {
-  let Query = `INSERT INTO test (title,context,idx) VALUES ("${props.title}", "${props.context}", 0);`;
-  connection.query(Query, function (err, results, fields) {
+function DeleteContents(props) {
+  let Query = `DELETE FROM test WHERE idx = ${props.idx};`;
+  connection.query(Query, function (err, results) {
     if (err) {
       console.log(err);
+      props.res.send("삭제를 하지 못하였습니다.");
     }
     console.log(results);
+    props.res.send("성공적으로 삭제되었습니다.");
   });
 }
 
@@ -40,13 +52,16 @@ app.get("/", function (req, res) {
 });
 
 app.get("/view", function (req, res) {
-  DBconnnection();
-  res.send("hello NodeJs");
+  DBconnnection(res);
 });
 
 app.post("/add", function (req, res) {
   PostContents({ title: req.body.title, context: req.body.context });
   res.send("저장되었습니다.");
+});
+
+app.put("/del", function (req, res) {
+  DeleteContents({ res: res, idx: req.body.idx });
 });
 
 app.listen(8080, () => {
