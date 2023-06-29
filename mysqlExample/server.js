@@ -14,10 +14,24 @@ const conn = {
   database: "test1",
 };
 
-let connection = mysql.createConnection(conn); // DB 커넥션 생성
-connection.connect();
+function DBconnnection() {
+  let connection = mysql.createConnection(conn); // DB 커넥션 생성
+  connection.connect();
+  let Query = "SELECT * FROM test1.test";
+  connection.query(Query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(results);
+  });
+}
 
 app.get("/", function (req, res) {
+  res.send("hello NodeJs");
+});
+
+app.get("/view", function (req, res) {
+  DBconnnection();
   res.send("hello NodeJs");
 });
 
