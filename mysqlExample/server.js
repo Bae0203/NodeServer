@@ -16,6 +16,17 @@ const conn = {
 let connection = mysql.createConnection(conn); // DB 커넥션 생성
 connection.connect();
 
+function getDate() {
+  const todayDate = new Date();
+  let year = todayDate.getFullYear();
+  let month = todayDate.getMonth() + 1;
+  let date = todayDate.getDate();
+  let hours = todayDate.getHours(); // 시
+  let minutes = todayDate.getMinutes(); // 분
+  let today = `${year}-${month}-${date} ${hours}:${minutes}`;
+  return today;
+}
+
 function DBconnnection(res) {
   let Query = "SELECT * FROM test1.test";
   connection.query(Query, function (err, results) {
@@ -27,7 +38,8 @@ function DBconnnection(res) {
   });
 }
 function PostContents(props) {
-  let Query = `INSERT INTO test (title,context,idx) VALUES ("${props.title}", "${props.context}", 0);`;
+  let today = getDate();
+  let Query = `INSERT INTO test (title,context,date,idx) VALUES ("${props.title}", "${props.context}","${today}" , 0);`;
   connection.query(Query, function (err, results) {
     if (err) {
       console.log(err);
@@ -67,3 +79,5 @@ app.delete("/del", function (req, res) {
 app.listen(8080, () => {
   console.log("서버 시작");
 });
+
+app.get("/detail/:id");
