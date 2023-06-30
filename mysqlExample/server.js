@@ -58,6 +58,17 @@ function DeleteContents(props) {
     props.res.send("성공적으로 삭제되었습니다.");
   });
 }
+function GetPostDetail(props) {
+  let Query = `SELECT * FROM test WHERE idx = ${props.idx}`;
+  connection.query(Query, function (err, results) {
+    if (err) {
+      console.log(err);
+      props.res.send({ data: "값을 불러오지 못하였습니다." });
+    }
+    console.log(results);
+    props.res.send({ data: results });
+  });
+}
 
 app.get("/", function (req, res) {
   res.send("hello NodeJs");
@@ -80,4 +91,6 @@ app.listen(8080, () => {
   console.log("서버 시작");
 });
 
-app.get("/detail/:id");
+app.get("/detail/:id", function (req, res) {
+  GetPostDetail({ idx: req.params.id, res: res });
+});
