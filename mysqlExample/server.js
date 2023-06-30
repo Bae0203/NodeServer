@@ -60,7 +60,7 @@ app.post("/add", function (req, res) {
   res.send("저장되었습니다.");
 });
 
-app.put("/del", function (req, res) {
+app.delete("/del", function (req, res) {
   DeleteContents({ res: res, idx: req.body.idx });
 });
 
