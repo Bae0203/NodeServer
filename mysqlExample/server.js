@@ -13,6 +13,7 @@ const conn = {
   password: "qwer1234",
   database: "test1",
 };
+
 let connection = mysql.createConnection(conn); // DB 커넥션 생성
 connection.connect();
 
@@ -27,6 +28,8 @@ function getDate() {
   return today;
 }
 
+//게시물 기능
+//게시물 불러오기
 function DBconnnection(res) {
   let Query = "SELECT * FROM test1.test";
   connection.query(Query, function (err, results) {
@@ -37,6 +40,7 @@ function DBconnnection(res) {
     res.send({ contents: results });
   });
 }
+//게시물 등록
 function PostContents(props) {
   let today = getDate();
   let Query = `INSERT INTO test (title,context,date,idx) VALUES ("${props.title}", "${props.context}","${today}" , 0);`;
@@ -47,6 +51,7 @@ function PostContents(props) {
     console.log(results);
   });
 }
+//게시물 삭제
 function DeleteContents(props) {
   let Query = `DELETE FROM test WHERE idx = ${props.idx};`;
   connection.query(Query, function (err, results) {
@@ -58,6 +63,7 @@ function DeleteContents(props) {
     props.res.send("성공적으로 삭제되었습니다.");
   });
 }
+//게시물 디테일
 function GetPostDetail(props) {
   let Query = `SELECT * FROM test WHERE idx = ${props.idx}`;
   connection.query(Query, function (err, results) {
@@ -70,15 +76,40 @@ function GetPostDetail(props) {
   });
 }
 
+//댓글 기능
+function GetComment(props) {
+  let Query = `SELECT * FROM Comment WHERE postidx = ${props.idx}`;
+  connection.query(Query, function (err, results) {
+    if (err) {
+      console.log(err);
+      props.res.send({ data: "값을 불러오지 못하였습니다." });
+    }
+    console.log(results);
+    props.res.send(results);
+  });
+}
+
+function PostComment(props) {
+  let today = getDate();
+  let Query = `INSERT INTO Comment (idx,comment,date,postidx) VALUES (0, "${props.comment}", "${today}", ${props.postidx});`;
+  connection.query(Query, function (err, results) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(results);
+    props.res.send({ message: "성공적으로 게시되었습니다.", result: results });
+  });
+}
+
 app.get("/", function (req, res) {
   res.send("hello NodeJs");
 });
 
-app.get("/view", function (req, res) {
+app.get("/view/post", function (req, res) {
   DBconnnection(res);
 });
 
-app.post("/add", function (req, res) {
+app.post("/add/post", function (req, res) {
   PostContents({ title: req.body.title, context: req.body.context });
   res.send("저장되었습니다.");
 });
@@ -93,4 +124,12 @@ app.listen(8080, () => {
 
 app.get("/detail/:id", function (req, res) {
   GetPostDetail({ idx: req.params.id, res: res });
+});
+
+app.post("/add/comment/:id", function (req, res) {
+  PostComment({ postidx: req.params.id, res: res, comment: req.body.comment });
+});
+
+app.get("/view/comment/:id", function (req, res) {
+  GetComment({ idx: req.params.id, res: res });
 });
