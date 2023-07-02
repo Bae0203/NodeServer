@@ -100,6 +100,20 @@ function PostComment(props) {
     props.res.send({ message: "성공적으로 게시되었습니다.", result: results });
   });
 }
+function DeleteComment(props) {
+  let Query = `DELETE FROM Comment WHERE idx = ${props.idx};`;
+  connection.query(Query, function (err, results) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(results);
+    props.res.send({ message: "성공적으로 삭제되었습니다.", result: results });
+  });
+}
+
+app.listen(8080, () => {
+  console.log("서버 시작");
+});
 
 app.get("/", function (req, res) {
   res.send("hello NodeJs");
@@ -114,12 +128,8 @@ app.post("/add/post", function (req, res) {
   res.send("저장되었습니다.");
 });
 
-app.delete("/del", function (req, res) {
+app.delete("/del/post", function (req, res) {
   DeleteContents({ res: res, idx: req.body.idx });
-});
-
-app.listen(8080, () => {
-  console.log("서버 시작");
 });
 
 app.get("/detail/:id", function (req, res) {
@@ -132,4 +142,8 @@ app.post("/add/comment/:id", function (req, res) {
 
 app.get("/view/comment/:id", function (req, res) {
   GetComment({ idx: req.params.id, res: res });
+});
+
+app.delete("/del/comment", function (req, res) {
+  DeleteComment({ idx: req.body.idx, res: res });
 });
