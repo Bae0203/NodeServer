@@ -11,5 +11,6 @@ const conn = {
 
 let connection = mysql.createConnection(conn); // DB 커넥션 생성
 connection.connect();
+console.log("DB 연결");
 
 module.exports = connection;
