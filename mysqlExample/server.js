@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
