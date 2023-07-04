@@ -1,2 +1,5 @@
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
+const authRoutes = express.Router();
+
+authRoutes.post("/signin", function (req, res) {});
+
+module.exports = authRoutes;
