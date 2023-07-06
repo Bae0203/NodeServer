@@ -3,7 +3,7 @@ let connection = require("../db/Connect");
 function SignIn(props) {}
 
 function SignUp(props) {
-  let Query = `INSERT INTO UserInfo (userId, userPassword, userName) VALUES ("${props.id}", "${props.password}",b"${props.name}");`;
+  let Query = `INSERT INTO UserInfo (userId, userPassword, userName) VALUES ("${props.id}", "${props.password}", "${props.name}");`;
   connection.query(Query, function (err, result) {
     if (err) {
       console.log("Error", err);
