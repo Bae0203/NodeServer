@@ -1,28 +1,22 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 let connection = require("../db/Connect");
 
-function SignIn(props) {
-  let Query = `SELECT * FROM UserInfo WHERE userId = "${props.id}"`;
-  connection.query(Query, function (err, result) {
-    if (err) {
-      console.log("Error", err);
-      return false;
-    }
-    console.log("Success", result);
-    const isMatch = bcrypt.compare(props.password, result[0].userPassword);
-    console.log(isMatch);
-    return isMatch;
-  });
-}
+async function SignIn(props) {
+  const id = props.id;
+  let Query = `SELECT * FROM UserInfo WHERE userId = "${id}"`;
 
-function GetName(props) {
-  let Query = `SELECT userName AS name FROM UserInfo WHERE userId = "${props.id}"`;
-  connection.query(Query, function (err, result) {
+  connection.query(Query, async function (err, result) {
     if (err) {
       console.log("Error", err);
-      return "";
     }
-    return { name: result[0].name };
+    const isMatch = bcrypt.compareSync(props.password, result[0].userPassword);
+    if (!isMatch) {
+      props.res.send({ message: "계정이 없거나 정보가 일치하지 않습니다." });
+      return;
+    }
+    const token = jwt.sign({ id }, "login_token");
+    props.res.json({ token });
   });
 }
 
@@ -51,4 +45,4 @@ function IdCheck(props) {
   });
 }
 
-module.exports = { SignIn, SignUp, GetName, IdCheck };
+module.exports = { SignIn, SignUp, IdCheck };
