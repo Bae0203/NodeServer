@@ -1,6 +1,30 @@
+const bcrypt = require("bcrypt");
 let connection = require("../db/Connect");
 
-function SignIn(props) {}
+function SignIn(props) {
+  let Query = `SELECT * FROM UserInfo WHERE userId = "${props.id}"`;
+  connection.query(Query, function (err, result) {
+    if (err) {
+      console.log("Error", err);
+      return false;
+    }
+    console.log("Success", result);
+    const isMatch = bcrypt.compare(props.password, result[0].userPassword);
+    console.log(isMatch);
+    return isMatch;
+  });
+}
+
+function GetName(props) {
+  let Query = `SELECT userName AS name FROM UserInfo WHERE userId = "${props.id}"`;
+  connection.query(Query, function (err, result) {
+    if (err) {
+      console.log("Error", err);
+      return "";
+    }
+    return { name: result[0].name };
+  });
+}
 
 function SignUp(props) {
   let Query = `INSERT INTO UserInfo (userId, userPassword, userName) VALUES ("${props.id}", "${props.password}", "${props.name}");`;
@@ -21,12 +45,10 @@ function IdCheck(props) {
     const count = result[0].count;
     if (count === 0) {
       props.res.send({ idCheck: true });
-      console.log("새로운 아이디 사용 가능");
     } else {
       props.res.send({ idCheck: false });
-      console.log("이미 동일한 아이디가 존재합니다");
     }
   });
 }
 
-module.exports = { SignIn, SignUp, IdCheck };
+module.exports = { SignIn, SignUp, GetName, IdCheck };
