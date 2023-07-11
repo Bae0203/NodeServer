@@ -14,7 +14,10 @@ authRoutes.post("/signup", async function (req, res) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   SignUp({ id: id, password: hashedPassword, name: name });
-  const token = jwt.sign({ id }, "login_token");
+  const token = jwt.sign(
+    { id: id, exp: Math.floor(Date.now() / 1000) + 60 * 60 },
+    "login_token"
+  );
   res.json({ token });
 });
 

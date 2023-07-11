@@ -15,7 +15,10 @@ async function SignIn(props) {
       props.res.send({ message: "계정이 없거나 정보가 일치하지 않습니다." });
       return;
     }
-    const token = jwt.sign({ id }, "login_token");
+    const token = jwt.sign(
+      { id: id, exp: Math.floor(Date.now() / 1000) + 60 * 60 },
+      "login_token"
+    );
     props.res.json({ token });
   });
 }
